@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Documentation Assistant</title>
+</head>
+<body>
+
+    <h2>📄 Upload Document</h2>
+    <input type="file" id="file" />
+    <button onclick="uploadDocument()">Upload</button>
+
+    <h2>📝 Summary</h2>
+    <button onclick="getSummary()">Get Summary</button>
+    <div id="summary" style="margin-top:10px; color:blue;"></div>
+
+    <h2>❓ Ask a Question</h2>
+    <input type="text" id="question" placeholder="Ask something..." />
+    <button onclick="askQuestion()">Ask</button>
+    <div id="answer" style="margin-top:10px; color:green;"></div>
+
+    <script src="scripts.js"></script>
+
+</body>
+</html>
