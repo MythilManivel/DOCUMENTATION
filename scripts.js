@@ -1,32 +1,58 @@
 async function uploadDocument() {
   const fileInput = document.getElementById("file");
+
+  if (!fileInput.files.length) {
+    alert("Please select a file to upload.");
+    return;
+  }
+
   const formData = new FormData();
   formData.append("file", fileInput.files[0]);
 
-  const response = await fetch("http://127.0.0.1:5000/upload", {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const response = await fetch("http://127.0.0.1:5000/upload", {
+      method: "POST",
+      body: formData
+    });
 
-  const result = await response.json();
-  alert("File uploaded successfully!");
+    await response.json();
+    alert("File uploaded successfully!");
+  } catch (error) {
+    alert("File upload failed.");
+    console.error(error);
+  }
 }
 
 async function getSummary() {
-  const response = await fetch("http://127.0.0.1:5000/summary");
-  const data = await response.json();
-  document.getElementById("summary").innerText = data.summary;
+  try {
+    const response = await fetch("http://127.0.0.1:5000/summary");
+    const result = await response.json();
+    document.getElementById("summary").innerText = result.summary;
+  } catch (error) {
+    document.getElementById("summary").innerText = "Error fetching summary.";
+    console.error(error);
+  }
 }
 
 async function askQuestion() {
-  const question = document.getElementById("question").value;
+  const userQuestion = document.getElementById("question").value.trim();
 
-  const response = await fetch("http://127.0.0.1:5000/ask", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ question: question })
-  });
+  if (!userQuestion) {
+    alert("Please enter a question.");
+    return;
+  }
 
-  const data = await response.json();
-  document.getElementById("answer").innerText = data.answer;
+  try {
+    const response = await fetch("http://127.0.0.1:5000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: userQuestion })
+    });
+
+    const result = await response.json();
+    document.getElementById("answer").innerText = result.answer;
+  } catch (error) {
+    document.getElementById("answer").innerText = "Error getting answer.";
+    console.error(error);
+  }
 }
