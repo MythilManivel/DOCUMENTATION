@@ -4,48 +4,55 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-stored_data = {}  # temporary storage
+stored_data = {}  # temporary in-memory storage
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    file = request.files["file"]
+    file = request.files.get("file")
 
-    # convert file content to text
-    text = file.read().decode("utf-8")
+    if not file:
+        return jsonify({"message": "No file uploaded!"}), 400
 
-    # Save text (so summary endpoint can read it)
-    global stored_data
-    stored_data["text"] = text
+    try:
+        text = file.read().decode("utf-8")
+    except Exception:
+        return jsonify({"message": "Invalid file format!"}), 400
+
+    stored_data["text"] = text.strip()
 
     return jsonify({"message": "File uploaded successfully!"})
 
+
 @app.route("/summary", methods=["GET"])
 def summary():
-    if "text" not in stored_data:
+    text = stored_data.get("text")
+
+    if not text:
         return jsonify({"summary": "No document uploaded yet!"})
 
-    text = stored_data["text"]
-
-    # Create simple summary
-    summary_text = text[:150] + "..." if len(text) > 150 else text
+    # Simple summary logic
+    summary_text = text[:200] + "..." if len(text) > 200 else text
 
     return jsonify({"summary": summary_text})
+
 
 @app.route("/ask", methods=["POST"])
 def ask():
     data = request.get_json()
-    question = data["question"]
+    question = data.get("question", "").lower()
 
-    if "text" not in stored_data:
+    text = stored_data.get("text")
+
+    if not text:
         return jsonify({"answer": "Upload a document first!"})
 
-    text = stored_data["text"]
-
-    # Simple Q&A (keyword search)
-    if question.lower() in text.lower():
-        return jsonify({"answer": "Yes, this information exists in the document."})
+    if question and question in text.lower():
+        answer = "Yes, this information is present in the document."
     else:
-        return jsonify({"answer": "Not found in the document."})
+        answer = "Sorry, I couldn’t find this in the document."
 
-if __name__ == '__main__':
+    return jsonify({"answer": answer})
+
+
+if __name__ == "__main__":
     app.run(debug=True)
