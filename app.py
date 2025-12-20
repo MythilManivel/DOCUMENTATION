@@ -4,23 +4,32 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-stored_data = {}  # temporary in-memory storage
+# temporary in-memory storage
+stored_data = {
+    "text": None
+}
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    file = request.files.get("file")
+    if "file" not in request.files:
+        return jsonify({"message": "File key not found!"}), 400
 
-    if not file:
-        return jsonify({"message": "No file uploaded!"}), 400
+    file = request.files["file"]
+
+    if file.filename == "":
+        return jsonify({"message": "No file selected!"}), 400
 
     try:
-        text = file.read().decode("utf-8")
-    except Exception:
-        return jsonify({"message": "Invalid file format!"}), 400
+        text = file.read().decode("utf-8").strip()
+    except UnicodeDecodeError:
+        return jsonify({"message": "Only UTF-8 text files are supported!"}), 400
 
-    stored_data["text"] = text.strip()
+    stored_data["text"] = text
 
-    return jsonify({"message": "File uploaded successfully!"})
+    return jsonify({
+        "message": "File uploaded successfully!",
+        "length": len(text)
+    })
 
 
 @app.route("/summary", methods=["GET"])
@@ -28,23 +37,28 @@ def summary():
     text = stored_data.get("text")
 
     if not text:
-        return jsonify({"summary": "No document uploaded yet!"})
+        return jsonify({"summary": "No document uploaded yet!"}), 400
 
-    # Simple summary logic
-    summary_text = text[:200] + "..." if len(text) > 200 else text
+    # basic summary logic (first 200 characters)
+    summary_text = text[:200]
+    if len(text) > 200:
+        summary_text += "..."
 
     return jsonify({"summary": summary_text})
 
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    data = request.get_json()
-    question = data.get("question", "").lower()
+    data = request.get_json(silent=True)
 
+    if not data or "question" not in data:
+        return jsonify({"answer": "Please provide a question!"}), 400
+
+    question = data["question"].lower().strip()
     text = stored_data.get("text")
 
     if not text:
-        return jsonify({"answer": "Upload a document first!"})
+        return jsonify({"answer": "Upload a document first!"}), 400
 
     if question and question in text.lower():
         answer = "Yes, this information is present in the document."
