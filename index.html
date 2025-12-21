@@ -2,30 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h2 {
+            color: #333;
+        }
+        input[type="file"], input[type="text"], button {
+            margin-top: 8px;
+            margin-bottom: 15px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        #summary, #answer {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #summary {
+            background-color: #e0f0ff;
+            color: #0055aa;
+        }
+        #answer {
+            background-color: #e0ffe0;
+            color: #007700;
+        }
+    </style>
 </head>
 <body>
 
-    <h2>📄 Upload Document</h2>
+    <h2>📄 Upload Your Document</h2>
     <input type="file" id="file" accept=".pdf,.doc,.docx,.txt" />
-    <button onclick="uploadDocument()">Upload</button>
+    <button onclick="uploadDocument()">Upload Document</button>
 
     <hr>
 
-    <h2>📝 Summary</h2>
-    <button onclick="getSummary()">Get Summary</button>
-    <div id="summary" style="margin-top:10px; color:blue;"></div>
+    <h2>📝 Get Document Summary</h2>
+    <button onclick="getSummary()">Generate Summary</button>
+    <div id="summary">Your summary will appear here...</div>
 
     <hr>
 
-    <h2>❓ Ask a Question</h2>
+    <h2>❓ Ask Questions About the Document</h2>
     <input 
         type="text" 
         id="question" 
-        placeholder="Ask something about the document..." 
+        placeholder="Type your question here..." 
     />
-    <button onclick="askQuestion()">Ask</button>
-    <div id="answer" style="margin-top:10px; color:green;"></div>
+    <button onclick="askQuestion()">Ask Question</button>
+    <div id="answer">Answer will appear here...</div>
 
     <script src="scripts.js"></script>
 
