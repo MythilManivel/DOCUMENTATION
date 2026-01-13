@@ -31,8 +31,8 @@ app.secret_key = 'your-secret-key-here'  # change in production
 # --------------------------------------------------
 # Global Stores
 # --------------------------------------------------
-processed_documents = {}   # filepath(str) -> document_id
-processing_status = {}     # filepath(str) -> status
+processed_documents = {}   # filepath (str) -> document_id
+processing_status = {}     # filepath (str) -> status
 
 # --------------------------------------------------
 # Initialize Analyzer
@@ -143,7 +143,7 @@ def upload_file():
             'message': 'PDF uploaded successfully. Processing started.'
         }), 200
 
-    except Exception as e:
+    except Exception:
         logger.error("Upload handler error", exc_info=True)
         return jsonify({'success': False, 'error': 'Unexpected server error'}), 500
 
@@ -179,7 +179,7 @@ def summarize():
             'document_id': document_id
         }), 200
 
-    except Exception as e:
+    except Exception:
         logger.error("Summarization error", exc_info=True)
         return jsonify({'success': False, 'error': 'Summarization failed'}), 500
 
@@ -212,7 +212,7 @@ def ask_question():
             'confidence': answer.get('confidence', 0.0)
         }), 200
 
-    except Exception as e:
+    except Exception:
         logger.error("Q&A error", exc_info=True)
         return jsonify({'success': False, 'error': 'Question processing failed'}), 500
 
