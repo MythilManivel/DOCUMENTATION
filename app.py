@@ -4,7 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# temporary in-memory storage
+# Temporary in-memory storage
 stored_data = {
     "text": None
 }
@@ -39,7 +39,7 @@ def summary():
     if not text:
         return jsonify({"summary": "No document uploaded yet!"}), 400
 
-    # basic summary logic (first 200 characters)
+    # Simple summary logic
     summary_text = text[:200]
     if len(text) > 200:
         summary_text += "..."
@@ -60,7 +60,7 @@ def ask():
     if not text:
         return jsonify({"answer": "Upload a document first!"}), 400
 
-    if question and question in text.lower():
+    if question in text.lower():
         answer = "Yes, this information is present in the document."
     else:
         answer = "Sorry, I couldn’t find this in the document."
